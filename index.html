@@ -635,26 +635,24 @@ svg.chart { width: 100%; height: 100%; }
         </div>
       </div>
 
-      <div class="sec-label" style="margin-bottom:12px;">기록된 시험</div>
-      <div class="glist">
-        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
-          <div><div class="gname">수학 1차 지필</div><div class="gdate">2026-04-15 · 4단원~6단원</div></div>
-          <div style="text-align:right"><div class="gscore">88</div><div class="gmax">/ 100</div></div>
+      <div class="sec-label" style="margin-bottom:12px;">기록된 성적</div>
+      <div class="glist" id="grade-list"></div>
+
+      <!-- 성적 입력 폼 -->
+      <div id="grade-form" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px;">
+        <div class="fl" style="margin-bottom:12px;">성적 입력</div>
+        <div class="fs" style="margin-bottom:12px;">
+          <input type="text" class="fi" id="g-name" placeholder="시험명 (예: 수학 1차 지필)">
         </div>
-        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
-          <div><div class="gname">국어 발표 수행평가</div><div class="gdate">2026-04-20 · 프레젠테이션</div></div>
-          <div style="text-align:right"><div class="gscore">17</div><div class="gmax">/ 20</div></div>
+        <div class="fs" style="margin-bottom:12px;">
+          <input type="date" class="fi" id="g-date">
         </div>
-        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
-          <div><div class="gname">영어 2차 지필</div><div class="gdate">2026-05-22 · Lesson 1~3</div></div>
-          <div style="text-align:right"><div class="gscore">92</div><div class="gmax">/ 100</div></div>
+        <div class="row2" style="margin-bottom:12px;">
+          <input type="number" class="fi" id="g-score" placeholder="점수">
+          <input type="number" class="fi" id="g-max" placeholder="만점">
         </div>
-        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
-          <div><div class="gname">수학 2차 지필</div><div class="gdate">2026-05-28 · 7단원~9단원</div></div>
-          <div style="text-align:right"><div class="gscore">95</div><div class="gmax">/ 100</div></div>
-        </div>
+        <button class="cta" style="margin-top:0;" onclick="submitGrade()">성적 저장하기</button>
       </div>
-      <button class="add-score" onclick="toast('성적 입력 폼은 추후 구현 예정')">+ 성적 입력하기</button>
     </div>
     </div>
   </div>
@@ -1035,7 +1033,67 @@ function applyName(name) {
   if (saved) applyName(saved);
 })();
 
+// ── GRADE DATA ──
+function getGrades() {
+  try { return JSON.parse(localStorage.getItem('grades')) || []; }
+  catch(e) { return []; }
+}
+function saveGrades(list) {
+  localStorage.setItem('grades', JSON.stringify(list));
+}
+
+function renderGrades() {
+  const list = getGrades().sort((a,b) => new Date(b.date) - new Date(a.date));
+  const el = document.getElementById('grade-list');
+  if (!list.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:13px;padding:20px 0;">아직 기록된 성적이 없어요</div>';
+    return;
+  }
+  el.innerHTML = list.map((g, i) => `
+    <div class="gitem" style="position:relative;">
+      <div>
+        <div class="gname">${g.name}</div>
+        <div class="gdate">${g.date}</div>
+      </div>
+      <div style="text-align:right;padding-right:24px;">
+        <div class="gscore">${g.score}</div>
+        <div class="gmax">/ ${g.max}</div>
+      </div>
+      <button onclick="deleteGrade(${i})" style="
+        position:absolute;top:8px;right:8px;
+        background:none;border:none;cursor:pointer;
+        font-size:16px;color:var(--text2);padding:2px 4px;line-height:1;
+      ">✕</button>
+    </div>
+  `).join('');
+}
+
+function deleteGrade(i) {
+  const list = getGrades().sort((a,b) => new Date(b.date) - new Date(a.date));
+  list.splice(i, 1);
+  saveGrades(list);
+  renderGrades();
+  toast('성적을 삭제했어요');
+}
+
+function submitGrade() {
+  const name  = document.getElementById('g-name').value.trim();
+  const date  = document.getElementById('g-date').value;
+  const score = document.getElementById('g-score').value;
+  const max   = document.getElementById('g-max').value;
+  if (!name || !date || !score || !max) { toast('모든 항목을 입력해주세요'); return; }
+  const list = getGrades();
+  list.push({ name, date, score: Number(score), max: Number(max) });
+  saveGrades(list);
+  document.getElementById('g-name').value = '';
+  document.getElementById('g-score').value = '';
+  document.getElementById('g-max').value = '';
+  renderGrades();
+  toast('성적이 저장되었어요! 📝');
+}
+
 renderCards();
+renderGrades();
 drawChart();
 </script>
 </body>
