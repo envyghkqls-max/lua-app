@@ -510,6 +510,14 @@ svg.chart { width: 100%; height: 100%; }
     <div class="scroll">
     <div class="scroll-inner">
 
+      <div class="hero" id="hero-banner" onclick="toast('오늘도 화이팅! 💜')">
+        <div class="hero-mascot">🌙</div>
+        <div class="hero-text" id="hero-text">
+          <div class="ht1" id="hero-title">오늘도 화이팅!</div>
+          <div class="ht2">일정을 추가해 D-day를 확인해보세요</div>
+        </div>
+      </div>
+
       <div class="sec-label">
         다가오는 일정
         <span class="more" onclick="navTo('add')">+ 추가</span>
@@ -812,6 +820,19 @@ function renderCards() {
     el.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:13px;padding:32px 0;">아직 등록된 일정이 없어요<br>+ 추가 버튼을 눌러보세요</div>';
     return;
   }
+  // 히어로 배너 업데이트
+  const heroTitle = document.getElementById('hero-title');
+  const heroBanner = document.getElementById('hero-banner');
+  if (list.length) {
+    const next = list[0];
+    const d = dday(next.date);
+    heroTitle.textContent = d === 0 ? `${next.subject} 오늘이에요!` : `${next.subject}까지 D-${d}!`;
+    heroBanner.onclick = () => toast(`${next.subject} 시험 화이팅! 💜`);
+  } else {
+    heroTitle.textContent = '오늘도 화이팅!';
+    heroBanner.onclick = () => toast('일정을 추가해보세요 💜');
+  }
+
   el.innerHTML = list.map((s, i) => {
     const d = dday(s.date);
     const col = colClass(d);
