@@ -75,41 +75,27 @@ button, input, textarea, select { font-family: inherit; }
 /* ── BODY ── */
 body {
   font-family: 'Pretendard', -apple-system, sans-serif;
-  background: #DDDAE8;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 24px 16px;
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  overflow: hidden;
 }
-.outer { display: flex; gap: 28px; align-items: flex-start; }
+.outer { width: 100%; height: 100%; }
 
 /* ── PHONE ── */
 .phone {
-  width: 375px;
-  height: 780px;
-  background: #0D0D0D;
-  border-radius: 52px;
-  padding: 14px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.06),
-    0 40px 100px rgba(0,0,0,0.45),
-    0 8px 30px rgba(0,0,0,0.3);
-  flex-shrink: 0;
+  width: 100%;
+  height: 100dvh;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   position: relative;
-}
-.phone::before {
-  content: '';
-  position: absolute;
-  top: 18px; left: 50%; transform: translateX(-50%);
-  width: 90px; height: 6px;
-  background: #1a1a1a;
-  border-radius: 3px;
-  z-index: 2;
 }
 .screen {
   width: 100%; height: 100%;
-  border-radius: 40px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg);
   display: flex;
@@ -840,36 +826,6 @@ svg.chart { width: 100%; height: 100%; }
 </div><!-- /screen -->
 </div><!-- /phone -->
 
-<!-- ── SIDE PANEL ── -->
-<div class="side" style="font-family:'Pretendard',-apple-system,sans-serif;">
-  <h2>🗂 목업 가이드</h2>
-  <div class="side-sec">
-    <h3>화면 구성</h3>
-    <div class="side-row"><div class="dot"></div><span>홈 — D-day 카드 리스트</span></div>
-    <div class="side-row"><div class="dot"></div><span>일정 추가 — 폼 입력</span></div>
-    <div class="side-row"><div class="dot"></div><span>성적 — 그래프 + 기록</span></div>
-    <div class="side-row"><div class="dot"></div><span>MY — 뱃지 + 테마</span></div>
-  </div>
-  <div class="side-sec">
-    <h3>클릭해보세요</h3>
-    <div class="side-row"><div class="dot w"></div><span>홈 카드 탭 → 상세 시트</span></div>
-    <div class="side-row"><div class="dot w"></div><span>일정 추가 폼 직접 입력</span></div>
-    <div class="side-row"><div class="dot w"></div><span>MY → 테마 4종 전환</span></div>
-    <div class="side-row"><div class="dot w"></div><span>MY → 뱃지 탭 → 설명</span></div>
-  </div>
-  <div class="side-sec">
-    <h3>미결 사항</h3>
-    <div class="side-row"><div class="dot g"></div><span>로그인 방식 결정</span></div>
-    <div class="side-row"><div class="dot g"></div><span>수행평가 유형 선택 방식</span></div>
-    <div class="side-row"><div class="dot g"></div><span>마스코트 캐릭터 방향</span></div>
-    <div class="side-row"><div class="dot g"></div><span>학교/학년 정보 입력 여부</span></div>
-  </div>
-  <div class="hint">
-    <strong>하단 탭</strong>으로 화면 전환<br>
-    홈 카드 탭 → <strong>상세 바텀시트</strong><br>
-    MY에서 <strong>테마</strong> 변경 가능
-  </div>
-</div>
 
 </div><!-- /outer -->
 
