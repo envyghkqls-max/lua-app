@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스터디메이트 — 목업</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button, input, textarea, select { font-family: inherit; }
+
+/* ── THEMES ── */
+:root {
+  --bg:        #F6F5FB;
+  --surface:   #FFFFFF;
+  --surface2:  #F0EEF9;
+  --text1:     #1A1830;
+  --text2:     #7B7A96;
+  --border:    #E8E6F4;
+  --accent:    #7C6EF5;
+  --accent-lt: #EDE9FE;
+  --accent-dk: #5C4FD6;
+  --rose:      #F472B6;
+  --rose-lt:   #FDF2F8;
+  --nav:       #FFFFFF;
+  --danger:    #F87171;
+  --warn:      #FBBF24;
+  --ok:        #34D399;
+}
+.t-dark {
+  --bg:        #12111A;
+  --surface:   #1E1C2A;
+  --surface2:  #272435;
+  --text1:     #F0EEFF;
+  --text2:     #8A88A8;
+  --border:    #2E2B3F;
+  --accent:    #9D8FFF;
+  --accent-lt: #1F1B35;
+  --accent-dk: #BEB2FF;
+  --rose:      #F9A8D4;
+  --rose-lt:   #2A1524;
+  --nav:       #1A1826;
+}
+.t-cream {
+  --bg:        #FBF7F2;
+  --surface:   #FFFFFF;
+  --surface2:  #F5EFE6;
+  --text1:     #2A1F14;
+  --text2:     #9A8A78;
+  --border:    #EDE5D8;
+  --accent:    #D97060;
+  --accent-lt: #FDF0EE;
+  --accent-dk: #B85040;
+  --rose:      #E8A598;
+  --rose-lt:   #FDF0EE;
+  --nav:       #FFFFFF;
+}
+.t-mint {
+  --bg:        #F2FAF8;
+  --surface:   #FFFFFF;
+  --surface2:  #E6F5F1;
+  --text1:     #0F2420;
+  --text2:     #70928C;
+  --border:    #D4EAE5;
+  --accent:    #18A692;
+  --accent-lt: #E6F5F1;
+  --accent-dk: #0E8070;
+  --rose:      #5BBFB0;
+  --rose-lt:   #E0F5F2;
+  --nav:       #FFFFFF;
+}
+
+/* ── BODY ── */
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: #DDDAE8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+.outer { display: flex; gap: 28px; align-items: flex-start; }
+
+/* ── PHONE ── */
+.phone {
+  width: 375px;
+  height: 780px;
+  background: #0D0D0D;
+  border-radius: 52px;
+  padding: 14px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 40px 100px rgba(0,0,0,0.45),
+    0 8px 30px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+  position: relative;
+}
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 18px; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 6px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  z-index: 2;
+}
+.screen {
+  width: 100%; height: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  transition: background .3s;
+  position: relative;
+}
+
+/* ── STATUS BAR ── */
+.sbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px 6px;
+  background: var(--bg);
+  transition: background .3s;
+  flex-shrink: 0;
+}
+.sbar .time { font-size: 13px; font-weight: 700; color: var(--text1); letter-spacing: -.2px; }
+.sbar .icons { display: flex; gap: 5px; align-items: center; }
+.sbar .icons svg { width: 14px; height: 14px; fill: var(--text1); }
+
+/* ── TAB VIEWS ── */
+.tab { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.tab.active { display: flex; }
+
+.scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+.scroll-inner { padding: 8px 20px 24px; }
+
+/* ── PAGE HEADERS ── */
+.ph { padding: 4px 20px 12px; flex-shrink: 0; background: var(--bg); transition: background .3s; }
+.ph-title { font-size: 22px; font-weight: 800; color: var(--text1); letter-spacing: -.5px; line-height: 1.2; }
+.ph-sub { font-size: 12.5px; color: var(--text2); margin-top: 3px; letter-spacing: -.1px; }
+
+/* ── BOTTOM NAV ── */
+.bnav {
+  display: flex; align-items: stretch;
+  background: var(--nav);
+  border-top: 1px solid var(--border);
+  transition: background .3s, border-color .3s;
+  flex-shrink: 0;
+  padding: 0 4px 12px;
+}
+.ni {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0 2px; cursor: pointer; gap: 4px; position: relative;
+}
+.ni svg { width: 22px; height: 22px; stroke: var(--text2); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
+.ni span { font-size: 10px; font-weight: 500; color: var(--text2); transition: color .2s; letter-spacing: -.1px; }
+.ni.on svg { stroke: var(--accent); }
+.ni.on span { color: var(--accent); font-weight: 700; }
+.ni.on::after { content: ''; position: absolute; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+/* ── HOME ── */
+.hero {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--rose) 100%);
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='60' cy='60' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-mascot {
+  width: 52px; height: 52px; border-radius: 16px;
+  background: rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0; position: relative;
+}
+.hero-text { position: relative; }
+.hero-text .ht1 { font-size: 14px; font-weight: 700; color: white; letter-spacing: -.3px; }
+.hero-text .ht2 { font-size: 12px; color: rgba(255,255,255,.8); margin-top: 3px; }
+
+.sec-label {
+  font-size: 13px; font-weight: 700; color: var(--text2);
+  letter-spacing: -.1px; margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sec-label .more {
+  font-size: 11.5px; font-weight: 500; color: var(--accent); cursor: pointer;
+}
+
+/* D-day cards */
+.dcard {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  border: 1px solid var(--border);
+}
+.dcard:active { transform: scale(.98); }
+.dcard:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); transform: translateY(-1px); }
+
+.dcol {
+  width: 48px; flex-shrink: 0; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.dnum { font-size: 20px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.dtype-text { font-size: 9.5px; font-weight: 600; letter-spacing: -.1px; }
+.col-u .dnum { color: var(--danger); }
+.col-u .dtype-text { color: var(--danger); }
+.col-w .dnum { color: var(--warn); }
+.col-w .dtype-text { color: var(--warn); }
+.col-n .dnum { color: var(--accent); }
+.col-n .dtype-text { color: var(--accent); }
+
+.dcol-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; }
+
+.dinfo { flex: 1; min-width: 0; }
+.dsubj { font-size: 15px; font-weight: 700; color: var(--text1); letter-spacing: -.3px; }
+.ddesc { font-size: 12px; color: var(--text2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.badge {
+  font-size: 10.5px; font-weight: 700; padding: 4px 8px; border-radius: 8px;
+  flex-shrink: 0; letter-spacing: -.1px;
+}
+.badge-exam { background: #FEF2F2; color: var(--danger); }
+.badge-perf { background: var(--accent-lt); color: var(--accent); }
+
+/* FAB */
+.fab {
+  position: absolute; bottom: 68px; right: 20px;
+  width: 50px; height: 50px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(124,110,245,.4);
+  transition: transform .15s, box-shadow .15s;
+  z-index: 10;
+}
+.fab:hover { transform: scale(1.06); box-shadow: 0 8px 28px rgba(124,110,245,.5); }
+.fab svg { width: 22px; height: 22px; stroke: white; stroke-width: 2.2; stroke-linecap: round; }
+
+/* ── ADD FORM ── */
+.fl { font-size: 11.5px; font-weight: 700; color: var(--text2); margin-bottom: 8px; letter-spacing: .04em; text-transform: uppercase; }
+.fs { margin-bottom: 18px; }
+
+.type-row { display: flex; gap: 8px; }
+.type-btn {
+  flex: 1; padding: 11px 8px; border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text2);
+  font-size: 13.5px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  transition: all .2s; letter-spacing: -.2px;
+}
+.type-btn.on { border-color: var(--accent); background: var(--accent-lt); color: var(--accent); }
+
+.fi {
+  width: 100%; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; font-size: 14px; color: var(--text1);
+  outline: none; transition: border-color .2s, background .3s;
+}
+.fi:focus { border-color: var(--accent); }
+.fi::placeholder { color: var(--text2); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 8px 13px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  font-size: 12.5px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .18s; letter-spacing: -.2px;
+}
+.chip.on { border-color: var(--accent); background: var(--accent-lt); color: var(--accent); }
+
+.row2 { display: flex; gap: 8px; }
+.row2 > * { flex: 1; min-width: 0; }
+
+.notify-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.nchip {
+  padding: 7px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .18s;
+}
+.nchip.on { border-color: var(--accent); background: var(--accent-lt); color: var(--accent); }
+
+.cta {
+  width: 100%; padding: 15px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 14px;
+  font-size: 15.5px; font-weight: 700;
+  cursor: pointer; letter-spacing: -.2px;
+  transition: opacity .2s, transform .15s;
+  margin-top: 8px;
+}
+.cta:hover { opacity: .92; transform: translateY(-1px); }
+
+/* ── GRADES ── */
+.gtabs { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; margin-bottom: 16px; padding-bottom: 2px; }
+.gtabs::-webkit-scrollbar { display: none; }
+.gtab {
+  padding: 7px 15px; border-radius: 20px; flex-shrink: 0;
+  border: 1.5px solid var(--border); background: var(--surface);
+  font-size: 12.5px; font-weight: 600; color: var(--text2);
+  cursor: pointer; transition: all .18s; letter-spacing: -.2px;
+}
+.gtab.on { background: var(--accent); color: white; border-color: var(--accent); }
+
+.chart-card {
+  background: var(--surface); border-radius: 20px;
+  padding: 18px; margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.chart-card .cc-title { font-size: 13.5px; font-weight: 700; color: var(--text1); margin-bottom: 14px; letter-spacing: -.2px; }
+.chart-wrap { height: 140px; position: relative; }
+svg.chart { width: 100%; height: 100%; }
+
+.glist { display: flex; flex-direction: column; gap: 10px; }
+.gitem {
+  background: var(--surface); border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: transform .15s;
+}
+.gitem:hover { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(0,0,0,.06); }
+.gname { font-size: 14px; font-weight: 700; color: var(--text1); letter-spacing: -.2px; }
+.gdate { font-size: 11.5px; color: var(--text2); margin-top: 2px; }
+.gscore { font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -1px; line-height: 1; }
+.gmax { font-size: 11px; color: var(--text2); text-align: right; }
+
+.add-score {
+  width: 100%; padding: 13px;
+  background: transparent; color: var(--accent);
+  border: 1.5px dashed var(--accent); border-radius: 14px;
+  font-size: 13.5px; font-weight: 700; letter-spacing: -.2px;
+  cursor: pointer; margin-top: 4px;
+  transition: background .18s;
+}
+.add-score:hover { background: var(--accent-lt); }
+
+/* ── MY ── */
+.profile-card {
+  border-radius: 20px; padding: 20px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.profile-card::before {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+}
+.pava {
+  width: 54px; height: 54px; border-radius: 18px;
+  background: rgba(255,255,255,.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0; position: relative;
+}
+.pname { font-size: 18px; font-weight: 800; color: white; letter-spacing: -.4px; }
+.plevel { font-size: 12px; color: rgba(255,255,255,.85); margin-top: 2px; }
+.xbar-wrap { margin-top: 8px; width: 150px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; }
+.xbar { height: 100%; border-radius: 3px; background: white; }
+.xp-label { font-size: 10px; color: rgba(255,255,255,.7); margin-top: 4px; }
+
+.streak-wrap { margin-bottom: 20px; }
+.streak-row { display: flex; gap: 6px; }
+.sday {
+  flex: 1; aspect-ratio: 1;
+  border-radius: 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+}
+.sday-label { font-size: 9px; font-weight: 700; }
+.sday-dot { width: 10px; height: 10px; border-radius: 50%; }
+.sday.done { background: var(--accent-lt); }
+.sday.done .sday-label { color: var(--accent); }
+.sday.done .sday-dot { background: var(--accent); }
+.sday.today { background: var(--accent); }
+.sday.today .sday-label { color: white; }
+.sday.today .sday-dot { background: white; opacity: .7; }
+.sday.empty { background: var(--surface); border: 1.5px solid var(--border); }
+.sday.empty .sday-label { color: var(--text2); }
+.sday.empty .sday-dot { background: var(--border); }
+
+.badge-grid { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 20px; }
+.bg-item {
+  width: calc(33.33% - 6px);
+  background: var(--surface); border-radius: 14px; padding: 14px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: transform .15s;
+}
+.bg-item:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+.bg-item.locked { opacity: .32; }
+.bg-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--accent-lt); display: flex; align-items: center; justify-content: center;
+}
+.bg-icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bg-name { font-size: 10.5px; font-weight: 700; color: var(--text1); text-align: center; letter-spacing: -.2px; line-height: 1.3; }
+
+.theme-grid { display: flex; gap: 8px; }
+.tswatch {
+  flex: 1; height: 50px; border-radius: 14px;
+  cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  border: 2px solid transparent;
+  transition: border-color .2s, transform .15s;
+}
+.tswatch.on { border-color: var(--accent); transform: scale(1.05); }
+.tswatch span:first-child { font-size: 16px; }
+.tswatch .tname { font-size: 9px; font-weight: 700; }
+
+/* ── BOTTOM SHEET ── */
+.overlay {
+  display: none; position: absolute; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 50; align-items: flex-end;
+  border-radius: 40px; backdrop-filter: blur(2px);
+}
+.overlay.open { display: flex; }
+.sheet {
+  background: var(--surface); border-radius: 24px 24px 0 0;
+  padding: 8px 20px 28px; width: 100%;
+  transition: background .3s;
+}
+.sheet-handle { width: 32px; height: 3.5px; background: var(--border); border-radius: 2px; margin: 10px auto 18px; }
+.sheet-title { font-size: 18px; font-weight: 800; color: var(--text1); letter-spacing: -.4px; }
+.sheet-sub { font-size: 12.5px; color: var(--text2); margin-top: 3px; margin-bottom: 14px; }
+.sheet-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.sheet-row:last-of-type { border-bottom: none; margin-bottom: 2px; }
+.sheet-row .k { font-size: 12.5px; color: var(--text2); }
+.sheet-row .v { font-size: 13px; font-weight: 700; color: var(--text1); }
+
+.memo-wrap { margin-top: 14px; }
+.memo-label { font-size: 11.5px; font-weight: 700; color: var(--text2); margin-bottom: 7px; letter-spacing: .03em; text-transform: uppercase; }
+.memo-fi {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 11px 14px; font-size: 13.5px; color: var(--text1);
+  outline: none; resize: none; transition: border-color .2s, background .3s;
+}
+.memo-fi:focus { border-color: var(--accent); }
+.memo-fi::placeholder { color: var(--text2); }
+
+.sheet-close {
+  width: 100%; padding: 14px;
+  background: var(--surface2); color: var(--text1);
+  border: none; border-radius: 12px;
+  font-size: 14.5px; font-weight: 700; letter-spacing: -.2px;
+  cursor: pointer; margin-top: 14px;
+  transition: opacity .2s;
+}
+.sheet-close:hover { opacity: .75; }
+
+/* ── TOAST ── */
+.toast {
+  position: absolute; bottom: 74px; left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(26,24,48,.92);
+  backdrop-filter: blur(8px);
+  color: white; padding: 10px 18px;
+  border-radius: 22px; font-size: 12.5px; font-weight: 600;
+  opacity: 0; transition: opacity .25s, transform .25s;
+  pointer-events: none; white-space: nowrap; z-index: 200;
+  letter-spacing: -.2px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── SIDE PANEL ── */
+.side {
+  width: 240px; background: white; border-radius: 20px;
+  padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,.1);
+  font-size: 13px; color: #333;
+}
+.side h2 { font-size: 15px; font-weight: 800; margin-bottom: 16px; color: #111; letter-spacing: -.3px; }
+.side-sec { margin-bottom: 16px; }
+.side-sec h3 { font-size: 10.5px; font-weight: 700; color: #999; margin-bottom: 9px; text-transform: uppercase; letter-spacing: .05em; }
+.side-row { display: flex; align-items: center; gap: 9px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; }
+.side-row:last-child { border-bottom: none; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #7C6EF5; flex-shrink: 0; }
+.dot.w { background: #FBBF24; }
+.dot.g { background: #d9d9d9; border: 1.5px solid #bbb; }
+.side-row span { font-size: 12px; color: #555; }
+.hint { background: #F6F5FB; border-radius: 10px; padding: 11px 13px; margin-top: 12px; font-size: 11.5px; color: #666; line-height: 1.65; }
+.hint strong { color: #7C6EF5; }
+</style>
+</head>
+<body>
+<div class="outer">
+
+<!-- ── PHONE ── -->
+<div class="phone">
+<div class="screen" id="scr">
+
+  <!-- Status bar -->
+  <div class="sbar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg viewBox="0 0 24 24"><path d="M1 6l5 5 6-6 6 6 5-5" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="11" rx="2" stroke="currentColor" fill="none" stroke-width="2"/><path d="M22 11v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="tab active" id="t-home">
+    <div class="ph">
+      <div class="ph-title">안녕하세요, 민준님 👋</div>
+      <div class="ph-sub">오늘 6월 18일 수요일</div>
+    </div>
+    <div class="scroll">
+    <div class="scroll-inner">
+
+      <div class="hero" onclick="toast('오늘도 화이팅! 수학 시험 D-3이에요 💜')">
+        <div class="hero-mascot">🌙</div>
+        <div class="hero-text">
+          <div class="ht1">수학 시험까지 D-3!</div>
+          <div class="ht2">오늘 계획 세워볼까요?</div>
+        </div>
+      </div>
+
+      <div class="sec-label">
+        다가오는 일정
+        <span class="more" onclick="navTo('add')">+ 추가</span>
+      </div>
+
+      <div class="dcard" onclick="openSheet('math')">
+        <div class="dcol col-u">
+          <span class="dnum">3</span>
+          <span class="dtype-text">D-DAY</span>
+        </div>
+        <div class="dcol-divider"></div>
+        <div class="dinfo">
+          <div class="dsubj">수학</div>
+          <div class="ddesc">4단원 ~ 6단원 · 100점 만점</div>
+        </div>
+        <div class="badge badge-exam">시험</div>
+      </div>
+
+      <div class="dcard" onclick="openSheet('korean')">
+        <div class="dcol col-w">
+          <span class="dnum">7</span>
+          <span class="dtype-text">D-DAY</span>
+        </div>
+        <div class="dcol-divider"></div>
+        <div class="dinfo">
+          <div class="dsubj">국어</div>
+          <div class="ddesc">발표 프레젠테이션 · 30% 반영</div>
+        </div>
+        <div class="badge badge-perf">수행평가</div>
+      </div>
+
+      <div class="dcard" onclick="openSheet('english')">
+        <div class="dcol col-n">
+          <span class="dnum">14</span>
+          <span class="dtype-text">D-DAY</span>
+        </div>
+        <div class="dcol-divider"></div>
+        <div class="dinfo">
+          <div class="dsubj">영어</div>
+          <div class="ddesc">Lesson 3 ~ 5 · 100점 만점</div>
+        </div>
+        <div class="badge badge-exam">시험</div>
+      </div>
+
+      <div class="dcard" onclick="openSheet('science')">
+        <div class="dcol col-n">
+          <span class="dnum">21</span>
+          <span class="dtype-text">D-DAY</span>
+        </div>
+        <div class="dcol-divider"></div>
+        <div class="dinfo">
+          <div class="dsubj">과학</div>
+          <div class="ddesc">실험 보고서 · 20% 반영</div>
+        </div>
+        <div class="badge badge-perf">수행평가</div>
+      </div>
+
+    </div>
+    </div>
+
+    <div class="fab" onclick="navTo('add')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+  </div>
+
+  <!-- ══ ADD ══ -->
+  <div class="tab" id="t-add">
+    <div class="ph">
+      <div class="ph-title">일정 추가</div>
+      <div class="ph-sub">시험 또는 수행평가를 등록하세요</div>
+    </div>
+    <div class="scroll">
+    <div class="scroll-inner">
+
+      <div class="fs">
+        <div class="fl">유형</div>
+        <div class="type-row">
+          <button class="type-btn on" id="btnExam" onclick="toggleType('exam')">시험</button>
+          <button class="type-btn" id="btnPerf" onclick="toggleType('perf')">수행평가</button>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fl">과목</div>
+        <div class="chips">
+          <div class="chip on" onclick="pickChip(this,'sub')">수학</div>
+          <div class="chip" onclick="pickChip(this,'sub')">국어</div>
+          <div class="chip" onclick="pickChip(this,'sub')">영어</div>
+          <div class="chip" onclick="pickChip(this,'sub')">과학</div>
+          <div class="chip" onclick="pickChip(this,'sub')">사회</div>
+          <div class="chip" onclick="pickChip(this,'sub')">직접입력</div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fl">날짜</div>
+        <input type="date" class="fi" value="2026-06-21">
+      </div>
+
+      <div class="fs">
+        <div class="fl">시험 범위</div>
+        <input type="text" class="fi" placeholder="예) 4단원 ~ 6단원">
+      </div>
+
+      <div class="fs" id="perfTypeFs" style="display:none;">
+        <div class="fl">수행평가 유형</div>
+        <input type="text" class="fi" placeholder="예) 발표, 실험보고서, 프레젠테이션">
+      </div>
+
+      <div class="fs">
+        <div class="fl">비율 & 배점</div>
+        <div class="row2">
+          <input type="number" class="fi" placeholder="반영 비율 (%)">
+          <input type="number" class="fi" placeholder="만점 (점)">
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fl">알림 설정</div>
+        <div class="notify-row">
+          <div class="nchip on" onclick="this.classList.toggle('on')">당일</div>
+          <div class="nchip on" onclick="this.classList.toggle('on')">1일 전</div>
+          <div class="nchip" onclick="this.classList.toggle('on')">3일 전</div>
+          <div class="nchip" onclick="this.classList.toggle('on')">7일 전</div>
+          <div class="nchip" onclick="this.classList.toggle('on')">직접 설정</div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fl">공부 계획 메모</div>
+        <textarea class="fi" rows="2" placeholder="한 줄로 계획을 적어요"></textarea>
+      </div>
+
+      <button class="cta" onclick="submitAdd()">일정 등록하기</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- ══ GRADES ══ -->
+  <div class="tab" id="t-grades">
+    <div class="ph">
+      <div class="ph-title">성적 기록</div>
+      <div class="ph-sub">과목별 점수 추이를 확인하세요</div>
+    </div>
+    <div class="scroll">
+    <div class="scroll-inner">
+
+      <div class="gtabs">
+        <div class="gtab on" onclick="pickGtab(this,'all')">전체</div>
+        <div class="gtab" onclick="pickGtab(this,'math')">수학</div>
+        <div class="gtab" onclick="pickGtab(this,'korean')">국어</div>
+        <div class="gtab" onclick="pickGtab(this,'english')">영어</div>
+        <div class="gtab" onclick="pickGtab(this,'science')">과학</div>
+      </div>
+
+      <div class="chart-card">
+        <div class="cc-title">점수 추이</div>
+        <div class="chart-wrap">
+          <svg class="chart" id="chart" viewBox="0 0 320 140"></svg>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:12px;">기록된 시험</div>
+      <div class="glist">
+        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
+          <div><div class="gname">수학 1차 지필</div><div class="gdate">2026-04-15 · 4단원~6단원</div></div>
+          <div style="text-align:right"><div class="gscore">88</div><div class="gmax">/ 100</div></div>
+        </div>
+        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
+          <div><div class="gname">국어 발표 수행평가</div><div class="gdate">2026-04-20 · 프레젠테이션</div></div>
+          <div style="text-align:right"><div class="gscore">17</div><div class="gmax">/ 20</div></div>
+        </div>
+        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
+          <div><div class="gname">영어 2차 지필</div><div class="gdate">2026-05-22 · Lesson 1~3</div></div>
+          <div style="text-align:right"><div class="gscore">92</div><div class="gmax">/ 100</div></div>
+        </div>
+        <div class="gitem" onclick="toast('상세 조회는 추후 구현 예정')">
+          <div><div class="gname">수학 2차 지필</div><div class="gdate">2026-05-28 · 7단원~9단원</div></div>
+          <div style="text-align:right"><div class="gscore">95</div><div class="gmax">/ 100</div></div>
+        </div>
+      </div>
+      <button class="add-score" onclick="toast('성적 입력 폼은 추후 구현 예정')">+ 성적 입력하기</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- ══ MY ══ -->
+  <div class="tab" id="t-my">
+    <div class="ph">
+      <div class="ph-title">마이페이지</div>
+    </div>
+    <div class="scroll">
+    <div class="scroll-inner">
+
+      <div class="profile-card">
+        <div class="pava">🌙</div>
+        <div>
+          <div class="pname">박민준</div>
+          <div class="plevel">Lv.7 · 꾸준한 학생</div>
+          <div class="xbar-wrap"><div class="xbar" style="width:65%"></div></div>
+          <div class="xp-label">다음 레벨까지 130 XP</div>
+        </div>
+      </div>
+
+      <div class="streak-wrap">
+        <div class="sec-label" style="margin-bottom:10px;">이번 주 스트릭 🔥</div>
+        <div class="streak-row">
+          <div class="sday done"><div class="sday-dot"></div><div class="sday-label">월</div></div>
+          <div class="sday done"><div class="sday-dot"></div><div class="sday-label">화</div></div>
+          <div class="sday today"><div class="sday-dot"></div><div class="sday-label">수</div></div>
+          <div class="sday empty"><div class="sday-dot"></div><div class="sday-label">목</div></div>
+          <div class="sday empty"><div class="sday-dot"></div><div class="sday-label">금</div></div>
+          <div class="sday empty"><div class="sday-dot"></div><div class="sday-label">토</div></div>
+          <div class="sday empty"><div class="sday-dot"></div><div class="sday-label">일</div></div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:10px;">획득한 뱃지</div>
+      <div class="badge-grid">
+        <div class="bg-item" onclick="toast('첫 시험 등록 완료!')">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+          <div class="bg-name">첫 발걸음</div>
+        </div>
+        <div class="bg-item" onclick="toast('3일 연속 달성!')">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="bg-name">3일 연속</div>
+        </div>
+        <div class="bg-item" onclick="toast('90점 이상 달성!')">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg></div>
+          <div class="bg-name">90점 돌파</div>
+        </div>
+        <div class="bg-item locked">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="bg-name">7일 연속</div>
+        </div>
+        <div class="bg-item locked">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="bg-name">만점 달성</div>
+        </div>
+        <div class="bg-item locked">
+          <div class="bg-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <div class="bg-name">10개 등록</div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:10px;">테마 선택</div>
+      <div class="theme-grid">
+        <div class="tswatch on" style="background:#EDE9FE;" onclick="setTheme('','#7C6EF5',this)">
+          <span>💜</span><span class="tname" style="color:#7C6EF5;">라벤더</span>
+        </div>
+        <div class="tswatch" style="background:#1E1C2A;" onclick="setTheme('t-dark','#9D8FFF',this)">
+          <span>🌑</span><span class="tname" style="color:#9D8FFF;">다크</span>
+        </div>
+        <div class="tswatch" style="background:#FDF0EE;" onclick="setTheme('t-cream','#D97060',this)">
+          <span>🍑</span><span class="tname" style="color:#D97060;">크림</span>
+        </div>
+        <div class="tswatch" style="background:#E6F5F1;" onclick="setTheme('t-mint','#18A692',this)">
+          <span>🌿</span><span class="tname" style="color:#18A692;">민트</span>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="ni on" id="ni-home" onclick="navTo('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+      <span>홈</span>
+    </div>
+    <div class="ni" id="ni-add" onclick="navTo('add')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>일정 추가</span>
+    </div>
+    <div class="ni" id="ni-grades" onclick="navTo('grades')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>성적</span>
+    </div>
+    <div class="ni" id="ni-my" onclick="navTo('my')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>MY</span>
+    </div>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div class="overlay" id="overlay" onclick="closeOverlay(event)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="stitle"></div>
+      <div class="sheet-sub" id="ssub"></div>
+      <div id="srows"></div>
+      <div class="memo-wrap">
+        <div class="memo-label">공부 계획 메모</div>
+        <textarea class="memo-fi" id="smemo" rows="2" placeholder="한 줄로 계획을 적어요"></textarea>
+      </div>
+      <button class="sheet-close" onclick="closeOverlay()">저장하기</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toastEl"></div>
+
+</div><!-- /screen -->
+</div><!-- /phone -->
+
+<!-- ── SIDE PANEL ── -->
+<div class="side" style="font-family:'Pretendard',-apple-system,sans-serif;">
+  <h2>🗂 목업 가이드</h2>
+  <div class="side-sec">
+    <h3>화면 구성</h3>
+    <div class="side-row"><div class="dot"></div><span>홈 — D-day 카드 리스트</span></div>
+    <div class="side-row"><div class="dot"></div><span>일정 추가 — 폼 입력</span></div>
+    <div class="side-row"><div class="dot"></div><span>성적 — 그래프 + 기록</span></div>
+    <div class="side-row"><div class="dot"></div><span>MY — 뱃지 + 테마</span></div>
+  </div>
+  <div class="side-sec">
+    <h3>클릭해보세요</h3>
+    <div class="side-row"><div class="dot w"></div><span>홈 카드 탭 → 상세 시트</span></div>
+    <div class="side-row"><div class="dot w"></div><span>일정 추가 폼 직접 입력</span></div>
+    <div class="side-row"><div class="dot w"></div><span>MY → 테마 4종 전환</span></div>
+    <div class="side-row"><div class="dot w"></div><span>MY → 뱃지 탭 → 설명</span></div>
+  </div>
+  <div class="side-sec">
+    <h3>미결 사항</h3>
+    <div class="side-row"><div class="dot g"></div><span>로그인 방식 결정</span></div>
+    <div class="side-row"><div class="dot g"></div><span>수행평가 유형 선택 방식</span></div>
+    <div class="side-row"><div class="dot g"></div><span>마스코트 캐릭터 방향</span></div>
+    <div class="side-row"><div class="dot g"></div><span>학교/학년 정보 입력 여부</span></div>
+  </div>
+  <div class="hint">
+    <strong>하단 탭</strong>으로 화면 전환<br>
+    홈 카드 탭 → <strong>상세 바텀시트</strong><br>
+    MY에서 <strong>테마</strong> 변경 가능
+  </div>
+</div>
+
+</div><!-- /outer -->
+
+<script>
+// ── NAV ──
+function navTo(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  document.getElementById('t-' + id).classList.add('active');
+  const ni = document.getElementById('ni-' + id);
+  if (ni) ni.classList.add('on');
+  if (id === 'grades') drawChart();
+}
+
+// ── TYPE TOGGLE ──
+function toggleType(t) {
+  document.getElementById('btnExam').classList.toggle('on', t === 'exam');
+  document.getElementById('btnPerf').classList.toggle('on', t === 'perf');
+  document.getElementById('perfTypeFs').style.display = t === 'perf' ? 'block' : 'none';
+}
+
+// ── CHIP SELECT ──
+function pickChip(el, group) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function pickGtab(el, key) {
+  document.querySelectorAll('.gtab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  drawChart(key);
+}
+
+// ── SUBMIT ──
+function submitAdd() {
+  toast('일정이 등록되었어요! ✨');
+  setTimeout(() => navTo('home'), 1200);
+}
+
+// ── CHART ──
+const CD = {
+  all:     [72, 80, 85, 88, 92, 95],
+  math:    [70, 75, 82, 88, 91, 95],
+  korean:  [80, 82, 78, 85, 88, 90],
+  english: [75, 80, 88, 85, 92, 94],
+  science: [65, 70, 75, 80, 82, 85],
+};
+const CL = ['1월', '2월', '3월', '4월', '5월', '6월'];
+
+function drawChart(key = 'all') {
+  const svg = document.getElementById('chart');
+  if (!svg) return;
+  const d = CD[key] || CD.all;
+  const W = 320, H = 140;
+  const p = { t: 16, b: 22, l: 24, r: 8 };
+  const iW = W - p.l - p.r, iH = H - p.t - p.b;
+  const mn = 50, mx = 100;
+  const y = v => p.t + iH - (v - mn) / (mx - mn) * iH;
+  const x = i => p.l + i * (iW / (d.length - 1));
+  const pts = d.map((v, i) => [x(i), y(v)]);
+  const lp = pts.map((p, i) => (i ? `L${p[0]},${p[1]}` : `M${p[0]},${p[1]}`)).join(' ');
+  const ap = `${lp} L${pts[pts.length-1][0]},${H-p.b} L${pts[0][0]},${H-p.b} Z`;
+  const accent = getComputedStyle(document.getElementById('scr')).getPropertyValue('--accent').trim() || '#7C6EF5';
+  const text2  = getComputedStyle(document.getElementById('scr')).getPropertyValue('--text2').trim() || '#7B7A96';
+  const border = getComputedStyle(document.getElementById('scr')).getPropertyValue('--border').trim() || '#E8E6F4';
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${accent}" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${[60,70,80,90,100].map(v => `
+      <line x1="${p.l}" y1="${y(v)}" x2="${W-p.r}" y2="${y(v)}" stroke="${border}" stroke-width="1"/>
+      <text x="${p.l-4}" y="${y(v)+4}" text-anchor="end" font-size="9" fill="${text2}" font-family="Pretendard,-apple-system,sans-serif">${v}</text>
+    `).join('')}
+    <path d="${ap}" fill="url(#cg)"/>
+    <path d="${lp}" fill="none" stroke="${accent}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map((pt, i) => `
+      <circle cx="${pt[0]}" cy="${pt[1]}" r="4" fill="${accent}" stroke="white" stroke-width="2"/>
+      <text x="${pt[0]}" y="${H-5}" text-anchor="middle" font-size="9" fill="${text2}" font-family="Pretendard,-apple-system,sans-serif">${CL[i]}</text>
+      <text x="${pt[0]}" y="${pt[1]-9}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${accent}" font-family="Pretendard,-apple-system,sans-serif">${d[i]}</text>
+    `).join('')}
+  `;
+}
+
+// ── BOTTOM SHEET ──
+const SD = {
+  math: {
+    title: '수학', sub: '시험 · 2026-06-21 · D-3',
+    rows: [['범위','4단원 ~ 6단원'], ['배점','100점 만점'], ['알림','1일 전, 3일 전']],
+    memo: '오늘 4단원 개념 정리하기'
+  },
+  korean: {
+    title: '국어', sub: '수행평가 · 2026-06-25 · D-7',
+    rows: [['유형','발표 프레젠테이션'], ['반영비율','30%'], ['배점','20점 만점'], ['알림','1일 전']],
+    memo: ''
+  },
+  english: {
+    title: '영어', sub: '시험 · 2026-07-02 · D-14',
+    rows: [['범위','Lesson 3 ~ 5'], ['배점','100점 만점'], ['알림','7일 전, 1일 전']],
+    memo: ''
+  },
+  science: {
+    title: '과학', sub: '수행평가 · 2026-07-09 · D-21',
+    rows: [['유형','실험 보고서'], ['반영비율','20%'], ['알림','당일']],
+    memo: ''
+  }
+};
+
+function openSheet(key) {
+  const d = SD[key];
+  document.getElementById('stitle').textContent = d.title;
+  document.getElementById('ssub').textContent   = d.sub;
+  document.getElementById('srows').innerHTML = d.rows
+    .map(([k,v]) => `<div class="sheet-row"><span class="k">${k}</span><span class="v">${v}</span></div>`)
+    .join('');
+  document.getElementById('smemo').value = d.memo;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeOverlay(e) {
+  if (!e || e.target === document.getElementById('overlay')) {
+    document.getElementById('overlay').classList.remove('open');
+    toast('메모가 저장되었어요');
+  }
+}
+
+// ── THEME ──
+function setTheme(cls, accent, el) {
+  const scr = document.getElementById('scr');
+  scr.className = 'screen' + (cls ? ' ' + cls : '');
+  document.querySelectorAll('.tswatch').forEach(s => s.classList.remove('on'));
+  el.classList.add('on');
+  setTimeout(drawChart, 40);
+  toast('테마가 변경되었어요');
+}
+
+// ── TOAST ──
+let toastTmr;
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+drawChart();
+</script>
+</body>
+</html>
